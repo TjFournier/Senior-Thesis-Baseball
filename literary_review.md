@@ -1,4 +1,4 @@
-1. [Baseball Home Field Advantage Without Fans in the Stands]([https://web.s.ebscohost.com/ehost/detail/detail?vid=0&sid=feb34e80-fe84-4937-9fa9-142d3d7445b2%40redis&bdata=JkF1dGhUeXBlPXNzbyZzaXRlPWVob3N0LWxpdmUmc2NvcGU9c2l0ZQ%3d%3d#db=ofm&AN=152195355](https://search.ebscohost.com/login.aspx?direct=true&AuthType=sso&db=ofm&AN=152195355&site=eds-live&custid=s8438901))
+1. [Baseball Home Field Advantage Without Fans in the Stands](https://scholar.google.com/scholar?hl=en&as_sdt=0%2C38&as_ylo=2019&q=baseball+homefield+advantage+without+fans+in+the+stands&btnG=)
 - (2021) Posted in International Journal of Sport Finance Volume 16 Number 3. 
 - Uses a logistic regression. 
 - Does a good job of breaking down the data and being thourgh in their analysis of the MLB 2020 season to the 2019 season. Saw little change in home field advantage (HFA), which implies that fans have little effect on the outcome. Should be noted HFA saw a minor increase in the 2020 season.
