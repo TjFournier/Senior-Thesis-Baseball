@@ -12,5 +12,5 @@
 - Uses both NFL and NCAA football for the data set. Used teams covering the spread as dependeent variable. Interestingly enough, attributed about half of HFA in football to the crowd. 
 
 
-The way I'll build upon the previous research is by taking advantage of the seasons that have elapsed since the COVID season, and then using it to determine if the MLB home field advantage has returned to pre pandemic levels. If it does, then we can come to the conclusion that the claims made about the impact of fans can be justified, since there 
+The way I'll build upon the previous research is by taking advantage of the seasons that have elapsed since the COVID season, and then using it to determine if the MLB home field advantage has returned to pre pandemic levels. If it does, then we can come to the conclusion that the claims made about the impact of fans can be justified, since past results match current trends.
 
