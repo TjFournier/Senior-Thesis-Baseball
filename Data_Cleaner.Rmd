@@ -1,0 +1,20 @@
+---
+title: "Data Cleaning"
+output: markdown
+date: "2023-02-27"
+---
+
+```{r, include=FALSE}
+mypacks <- c("ggplot2","dplyr","rpart","partykit", "ROCR", "boot", "readr", "rpart.plot", "tidyr", "stringr", "randomForest", "class", "rlang", "lubridate", "sparcl", "readxl", "ggridges")  
+packs <- installed.packages()   
+install.me <- mypacks[!(mypacks %in% packs[,"Package"])] 
+if (length(install.me) >= 1) install.packages(install.me, repos = "http://cran.us.r-project.org")   # install (if needed)
+lapply(mypacks, library, character.only=TRUE)  
+```
+
+```{r}
+Teams_2019 <- Teams %>% filter(yearID == 2019)
+Teams_2020 <- Teams %>% filter(yearID == 2020)
+Teams_2021 <- Teams %>% filter(yearID == 2021)
+Teams_2022 <- Teams %>% filter(yearID == 2022)
+```
