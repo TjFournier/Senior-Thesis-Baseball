@@ -12,9 +12,13 @@ if (length(install.me) >= 1) install.packages(install.me, repos = "http://cran.u
 lapply(mypacks, library, character.only=TRUE)  
 ```
 
-```{r}
-Teams_2019 <- Teams %>% filter(yearID == 2019)
-Teams_2020 <- Teams %>% filter(yearID == 2020)
-Teams_2021 <- Teams %>% filter(yearID == 2021)
-Teams_2022 <- Teams %>% filter(yearID == 2022)
+```{r, include=FALSE}
+# 2019 Data
+MLB_2019 <- read.csv('https://raw.githubusercontent.com/TjFournier/Senior-Thesis-Baseball/main/Data/MLB_2019.csv')
+
+# 2020 Data
+MLB_2020 <- read.csv('https://raw.githubusercontent.com/TjFournier/Senior-Thesis-Baseball/main/Data/MLB_2020.csv')
+
+# 2021 Data
+MLB_2021 <- read.csv('https://raw.githubusercontent.com/TjFournier/Senior-Thesis-Baseball/main/Data/MLB_2021.csv')
 ```
