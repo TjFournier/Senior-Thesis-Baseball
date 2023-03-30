@@ -17,8 +17,17 @@ lapply(mypacks, library, character.only=TRUE)
 MLB_2019 <- read.csv('https://raw.githubusercontent.com/TjFournier/Senior-Thesis-Baseball/main/Data/MLB_2019.csv')
 
 # 2020 Data
-MLB_2020 <- read.csv('https://raw.githubusercontent.com/TjFournier/Senior-Thesis-Baseball/main/Data/MLB_2020.csv')
+#MLB_2020 <- read.csv('https://raw.githubusercontent.com/TjFournier/Senior-Thesis-Baseball/main/Data/MLB_2020.csv')
 
 # 2021 Data
-MLB_2021 <- read.csv('https://raw.githubusercontent.com/TjFournier/Senior-Thesis-Baseball/main/Data/MLB_2021.csv')
+#MLB_2021 <- read.csv('https://raw.githubusercontent.com/TjFournier/Senior-Thesis-Baseball/main/Data/MLB_2021.csv')
+
+# 2022 Data
+#MLB_2021 <- read.csv('https://raw.githubusercontent.com/TjFournier/Senior-Thesis-Baseball/main/Data/MLB_2022.csv')
+```
+```{r}
+summary(MLB_2019)
+#summary(MLB_2020)
+#summary(MLB_2021)
+#summary(MLB_2022)
 ```
