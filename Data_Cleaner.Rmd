@@ -17,17 +17,65 @@ lapply(mypacks, library, character.only=TRUE)
 MLB_2019 <- read.csv('https://raw.githubusercontent.com/TjFournier/Senior-Thesis-Baseball/main/Data/MLB_2019.csv')
 
 # 2020 Data
-#MLB_2020 <- read.csv('https://raw.githubusercontent.com/TjFournier/Senior-Thesis-Baseball/main/Data/MLB_2020.csv')
+MLB_2020 <- read.csv('https://raw.githubusercontent.com/TjFournier/Senior-Thesis-Baseball/main/Data/MLB_2020.csv')
 
 # 2021 Data
-#MLB_2021 <- read.csv('https://raw.githubusercontent.com/TjFournier/Senior-Thesis-Baseball/main/Data/MLB_2021.csv')
+MLB_2021 <- read.csv('https://raw.githubusercontent.com/TjFournier/Senior-Thesis-Baseball/main/Data/MLB_2021.csv')
 
 # 2022 Data
 #MLB_2021 <- read.csv('https://raw.githubusercontent.com/TjFournier/Senior-Thesis-Baseball/main/Data/MLB_2022.csv')
 ```
 ```{r}
-summary(MLB_2019)
+#summary(MLB_2019)
 #summary(MLB_2020)
 #summary(MLB_2021)
 #summary(MLB_2022)
+```
+
+```{r} 
+# 2019 Data
+# Data renaming
+Cleaned_MLB_2019 <- MLB_2019
+names(Cleaned_MLB_2019)[c(5, 7)] <- c('home.field', 'win.loss')
+
+# Converting wins and losses to 1 and 0
+Cleaned_MLB_2019$win.loss <- ifelse(Cleaned_MLB_2019$win.loss %in% c("W", "W-wo"), 1, 0)
+
+# Makes home field have a value of 1 and visiting a value of 0
+Cleaned_MLB_2019$home.field <- ifelse(Cleaned_MLB_2019$home.field == '@', 0, 1)
+
+# Finds the length of game streak, winning is pos and losing is neg
+Cleaned_MLB_2019$Streak <- ifelse( grepl('\\+', Cleaned_MLB_2019$Streak), nchar(Cleaned_MLB_2019$Streak),-1*nchar(Cleaned_MLB_2019$Streak))
+```
+
+```{r} 
+# 2020 Data
+# Data renaming
+Cleaned_MLB_2020 <- MLB_2020
+names(Cleaned_MLB_2020)[c(5, 7)] <- c('home.field', 'win.loss')
+
+# Converting wins and losses to 1 and 0
+Cleaned_MLB_2020$win.loss <- ifelse(Cleaned_MLB_2020$win.loss %in% c("W", "W-wo"), 1, 0)
+
+# Makes home field have a value of 1 and visiting a value of 0
+Cleaned_MLB_2020$home.field <- ifelse(Cleaned_MLB_2020$home.field == '@', 0, 1)
+
+# Finds the length of game streak, winning is pos and losing is neg
+Cleaned_MLB_2020$Streak <- ifelse( grepl('\\+', Cleaned_MLB_2020$Streak), nchar(Cleaned_MLB_2020$Streak),-1*nchar(Cleaned_MLB_2020$Streak))
+```
+
+```{r} 
+# 2021 Data
+# Data renaming
+Cleaned_MLB_2021 <- MLB_2021
+names(Cleaned_MLB_2021)[c(5, 7)] <- c('home.field', 'win.loss')
+
+# Converting wins and losses to 1 and 0
+Cleaned_MLB_2021$win.loss <- ifelse(Cleaned_MLB_2021$win.loss %in% c("W", "W-wo"), 1, 0)
+
+# Makes home field have a value of 1 and visiting a value of 0
+Cleaned_MLB_2021$home.field <- ifelse(Cleaned_MLB_2021$home.field == '@', 0, 1)
+
+# Finds the length of game streak, winning is pos and losing is neg
+Cleaned_MLB_2021$Streak <- ifelse( grepl('\\+', Cleaned_MLB_2021$Streak), nchar(Cleaned_MLB_2021$Streak),-1*nchar(Cleaned_MLB_2021$Streak))
 ```
