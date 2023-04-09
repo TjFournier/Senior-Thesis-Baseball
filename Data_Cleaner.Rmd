@@ -5,7 +5,7 @@ date: "2023-02-27"
 ---
 
 ```{r, include=FALSE}
-mypacks <- c("ggplot2","dplyr","rpart","partykit", "ROCR", "boot", "readr", "rpart.plot", "tidyr", "stringr", "randomForest", "class", "rlang", "lubridate", "sparcl", "readxl", "ggridges")  
+mypacks <- c("ggplot2","dplyr","rpart","partykit", "ROCR", "boot", "readr", "rpart.plot", "tidyr", "stringr", "randomForest", "class", "rlang", "lubridate", "sparcl", "readxl", "ggridges", "RcppRoll")  
 packs <- installed.packages()   
 install.me <- mypacks[!(mypacks %in% packs[,"Package"])] 
 if (length(install.me) >= 1) install.packages(install.me, repos = "http://cran.us.r-project.org")   # install (if needed)
@@ -19,20 +19,20 @@ MLB_2019 <- read.csv('https://raw.githubusercontent.com/TjFournier/Senior-Thesis
 # 2020 Data
 MLB_2020 <- read.csv('https://raw.githubusercontent.com/TjFournier/Senior-Thesis-Baseball/main/Data/MLB_2020.csv')
 
-# 2021 Data
-MLB_2021 <- read.csv('https://raw.githubusercontent.com/TjFournier/Senior-Thesis-Baseball/main/Data/MLB_2021.csv')
-
 # 2022 Data
-#MLB_2021 <- read.csv('https://raw.githubusercontent.com/TjFournier/Senior-Thesis-Baseball/main/Data/MLB_2022.csv')
-```
-```{r}
-#summary(MLB_2019)
-#summary(MLB_2020)
-#summary(MLB_2021)
-#summary(MLB_2022)
+MLB_2022 <- read.csv('https://raw.githubusercontent.com/TjFournier/Senior-Thesis-Baseball/main/Data/MLB_2022.csv')
+
+# 2019 batting 
+batting_2019 <- read.csv('https://raw.githubusercontent.com/TjFournier/Senior-Thesis-Baseball/main/Data/2019_batting.csv')
+
+# 2020 batting 
+batting_2020 <- read.csv('https://raw.githubusercontent.com/TjFournier/Senior-Thesis-Baseball/main/Data/2020_batting.csv')
+
+# 2022 batting 
+batting_2022 <- read.csv('https://raw.githubusercontent.com/TjFournier/Senior-Thesis-Baseball/main/Data/2022_batting.csv')
 ```
 
-```{r} 
+```{r, include=FALSE} 
 # 2019 Data
 # Data renaming
 Cleaned_MLB_2019 <- MLB_2019
@@ -43,12 +43,24 @@ Cleaned_MLB_2019$win.loss <- ifelse(Cleaned_MLB_2019$win.loss %in% c("W", "W-wo"
 
 # Makes home field have a value of 1 and visiting a value of 0
 Cleaned_MLB_2019$home.field <- ifelse(Cleaned_MLB_2019$home.field == '@', 0, 1)
-
+  
 # Finds the length of game streak, winning is pos and losing is neg
 Cleaned_MLB_2019$Streak <- ifelse( grepl('\\+', Cleaned_MLB_2019$Streak), nchar(Cleaned_MLB_2019$Streak),-1*nchar(Cleaned_MLB_2019$Streak))
+
+# Distinguishing data for when it is eventially joined
+Cleaned_MLB_2019$season <- 2019
+
+# Adds gameday value
+Cleaned_MLB_2019$gameday <- Cleaned_MLB_2019$Gm.
+
+# Adds No Home design
+Cleaned_MLB_2019$NoHomeDesign <- ifelse( grepl('was home team', Cleaned_MLB_2019$Orig..Scheduled), 1, 0)
+
+# Key creation
+Cleaned_MLB_2019$MLB.Key <- str_c(Cleaned_MLB_2019$Tm,Cleaned_MLB_2019$Gm.,Cleaned_MLB_2019$Opp)
 ```
 
-```{r} 
+```{r, include=FALSE} 
 # 2020 Data
 # Data renaming
 Cleaned_MLB_2020 <- MLB_2020
@@ -62,20 +74,196 @@ Cleaned_MLB_2020$home.field <- ifelse(Cleaned_MLB_2020$home.field == '@', 0, 1)
 
 # Finds the length of game streak, winning is pos and losing is neg
 Cleaned_MLB_2020$Streak <- ifelse( grepl('\\+', Cleaned_MLB_2020$Streak), nchar(Cleaned_MLB_2020$Streak),-1*nchar(Cleaned_MLB_2020$Streak))
+
+# Distinguishing data for when it is eventially joined
+Cleaned_MLB_2020$season <- 2020
+
+# Adds gameday value
+Cleaned_MLB_2020$gameday <- Cleaned_MLB_2020$Gm.
+
+# Adds No Home design
+Cleaned_MLB_2020$NoHomeDesign <- ifelse( grepl('was home team', Cleaned_MLB_2020$Orig..Scheduled), 1, 0)
+
+# Key creation
+Cleaned_MLB_2020$MLB.Key <- str_c(Cleaned_MLB_2020$Tm,Cleaned_MLB_2020$Gm.,Cleaned_MLB_2020$Opp)
 ```
 
-```{r} 
-# 2021 Data
+```{r, include=FALSE} 
+# 2022 Data
 # Data renaming
-Cleaned_MLB_2021 <- MLB_2021
-names(Cleaned_MLB_2021)[c(5, 7)] <- c('home.field', 'win.loss')
+Cleaned_MLB_2022 <- MLB_2022
+names(Cleaned_MLB_2022)[c(5, 7)] <- c('home.field', 'win.loss')
 
 # Converting wins and losses to 1 and 0
-Cleaned_MLB_2021$win.loss <- ifelse(Cleaned_MLB_2021$win.loss %in% c("W", "W-wo"), 1, 0)
+Cleaned_MLB_2022$win.loss <- ifelse(Cleaned_MLB_2022$win.loss %in% c("W", "W-wo"), 1, 0)
 
 # Makes home field have a value of 1 and visiting a value of 0
-Cleaned_MLB_2021$home.field <- ifelse(Cleaned_MLB_2021$home.field == '@', 0, 1)
+Cleaned_MLB_2022$home.field <- ifelse(Cleaned_MLB_2022$home.field == '@', 0, 1)
 
 # Finds the length of game streak, winning is pos and losing is neg
-Cleaned_MLB_2021$Streak <- ifelse( grepl('\\+', Cleaned_MLB_2021$Streak), nchar(Cleaned_MLB_2021$Streak),-1*nchar(Cleaned_MLB_2021$Streak))
+Cleaned_MLB_2022$Streak <- ifelse( grepl('\\+', Cleaned_MLB_2022$Streak), nchar(Cleaned_MLB_2022$Streak),-1*nchar(Cleaned_MLB_2022$Streak))
+
+# Distinguishing data for when it is eventially joined
+Cleaned_MLB_2022$season <- 2022
+
+# Adds gameday value
+Cleaned_MLB_2022$gameday <- Cleaned_MLB_2022$Gm.
+
+# Adds No Home design
+Cleaned_MLB_2022$NoHomeDesign <- ifelse( grepl('was home team', Cleaned_MLB_2022$Orig..Scheduled), 1, 0)
+
+# Key creation
+Cleaned_MLB_2022$MLB.Key <- str_c(Cleaned_MLB_2022$Tm,Cleaned_MLB_2022$Gm.,Cleaned_MLB_2022$Opp)
+```
+
+```{r, include=FALSE}
+# batting data
+
+# 2019 data
+Cleaned_2019_batting <- subset(batting_2019, select = c("Rk", "Team","Date", "X", "Opp", "Result", "OPS"))
+Cleaned_2019_batting$X <- ifelse(Cleaned_2019_batting$X == '@', 0, 1)
+
+#Creates rolling average of OPS
+Cleaned_2019_batting <- Cleaned_2019_batting %>% group_by(Team)
+Cleaned_2019_batting$avg.OPS <- roll_mean(Cleaned_2019_batting$OPS, n = 15, align = "right", fill = NA)
+
+# Scores allowed 
+Cleaned_2019_batting$GS <- substr(Cleaned_2019_batting$Result, start = 5, stop = 6)
+Cleaned_2019_batting$GS <- gsub("-","", Cleaned_2019_batting$GS)
+Cleaned_2019_batting$GS <- as.numeric(Cleaned_2019_batting$GS)
+
+#Creates rolling average of GS
+Cleaned_2019_batting$avg.GS <- roll_mean(Cleaned_2019_batting$GS, n = 5, align = "right", fill = NA)
+
+#### Creating key to try and add Opp values
+
+# Key creation
+Cleaned_2019_batting$Key <- str_c(Cleaned_2019_batting$Team,Cleaned_2019_batting$Date,Cleaned_2020_batting$Opp)
+
+# Creates Opp
+Cleaned_2019_battingOpp <- subset(Cleaned_2019_batting, select = c("Rk", "Team","Date", "Opp", "avg.OPS", "avg.GS"))
+Cleaned_2019_battingOpp <- Cleaned_2019_battingOpp
+names(Cleaned_2019_battingOpp)[c(5,6)] <- c('avg.Opp.OPS', 'avg.Opp.GS')
+
+Cleaned_2019_battingOpp$Key <- str_c(Cleaned_2019_batting$Opp,Cleaned_2019_batting$Date,Cleaned_2019_batting$Team)
+
+#Joins the two data frames together
+Temp_Cleaned_2019_batting <- merge(Cleaned_2019_batting, Cleaned_2019_battingOpp, by = "Key")
+
+# Join Key for MLB and batting/pitching data frames
+Temp_Cleaned_2019_batting$MLB.Key <- str_c(Temp_Cleaned_2019_batting$Team.x,Temp_Cleaned_2019_batting$Rk.x,Temp_Cleaned_2019_batting$Opp.x)
+
+############
+
+# 2020 data
+Cleaned_2020_batting <- subset(batting_2020, select = c("Rk", "Team","Date", "X", "Opp", "Result","OPS"))
+Cleaned_2020_batting$X <- ifelse(Cleaned_2020_batting$X == '@', 0, 1)
+
+#Creates rolling average of OPS
+Cleaned_2020_batting <- Cleaned_2020_batting %>% group_by(Team)
+Cleaned_2020_batting$avg.OPS <- roll_mean(Cleaned_2020_batting$OPS, n = 15, align = "right", fill = NA)
+
+# Scores allowed (GS)
+Cleaned_2020_batting$GS <- substr(Cleaned_2020_batting$Result, start = 5, stop = 6)
+Cleaned_2020_batting$GS <- gsub("-","", Cleaned_2020_batting$GS)
+Cleaned_2020_batting$GS <- as.numeric(Cleaned_2020_batting$GS)
+
+#Creates rolling average of GS
+Cleaned_2020_batting$avg.GS <- roll_mean(Cleaned_2020_batting$GS, n = 5, align = "right", fill = NA)
+
+#### Creating key to try and add Opp values
+
+# Key creation
+Cleaned_2020_batting$Key <- str_c(Cleaned_2020_batting$Team,Cleaned_2020_batting$Date,Cleaned_2020_batting$Opp)
+
+# Creates Opp
+Cleaned_2020_battingOpp <- subset(Cleaned_2020_batting, select = c("Rk", "Team","Date", "Opp", "avg.OPS", "avg.GS"))
+Cleaned_2020_battingOpp <- Cleaned_2020_battingOpp
+names(Cleaned_2020_battingOpp)[c(5,6)] <- c('avg.Opp.OPS', 'avg.Opp.GS')
+
+Cleaned_2020_battingOpp$Key <- str_c(Cleaned_2020_batting$Opp,Cleaned_2020_batting$Date,Cleaned_2020_batting$Team)
+
+#Joins the two data frames together
+Temp_Cleaned_2020_batting <- merge(Cleaned_2020_batting, Cleaned_2020_battingOpp, by = "Key")
+
+# Join Key for MLB and batting/pitching data frames
+Temp_Cleaned_2020_batting$MLB.Key <- str_c(Temp_Cleaned_2020_batting$Team.x,Temp_Cleaned_2020_batting$Rk.x,Temp_Cleaned_2020_batting$Opp.x)
+
+############
+
+#2022 data 
+Cleaned_2022_batting <- subset(batting_2022, select = c("Rk", "Team","Date", "X", "Opp", "Result","OPS"))
+Cleaned_2022_batting$X <- ifelse(Cleaned_2022_batting$X == '@', 0, 1)
+
+#Creates rolling average of OPS
+Cleaned_2022_batting <- Cleaned_2022_batting %>% group_by(Team)
+Cleaned_2022_batting$avg.OPS <- roll_mean(Cleaned_2022_batting$OPS, n = 15, align = "right", fill = NA)
+
+# Scores allowed 
+Cleaned_2022_batting$GS <- substr(Cleaned_2022_batting$Result, start = 5, stop = 6)
+Cleaned_2022_batting$GS <- gsub("-","", Cleaned_2022_batting$GS)
+Cleaned_2022_batting$GS <- as.numeric(Cleaned_2022_batting$GS)
+
+#Creates rolling average of GS
+Cleaned_2022_batting$avg.GS <- roll_mean(Cleaned_2022_batting$GS, n = 5, align = "right", fill = NA)
+
+#### Creating key to try and add Opp values
+
+# Key creation
+Cleaned_2022_batting$Key <- str_c(Cleaned_2022_batting$Team,Cleaned_2022_batting$Date,Cleaned_2022_batting$Opp)
+
+# Creates Opp
+Cleaned_2022_battingOpp <- subset(Cleaned_2022_batting, select = c("Rk", "Team","Date", "Opp", "avg.OPS", "avg.GS"))
+Cleaned_2022_battingOpp <- Cleaned_2022_battingOpp
+names(Cleaned_2022_battingOpp)[c(5,6)] <- c('avg.Opp.OPS', 'avg.Opp.GS')
+
+Cleaned_2022_battingOpp$Key <- str_c(Cleaned_2022_batting$Opp,Cleaned_2022_batting$Date,Cleaned_2022_batting$Team)
+
+# Joins the two data frames together
+Temp_Cleaned_2022_batting <- merge(Cleaned_2022_batting, Cleaned_2022_battingOpp, by = "Key")
+
+# Join Key for MLB and batting/pitching data frames
+Temp_Cleaned_2022_batting$MLB.Key <- str_c(Temp_Cleaned_2022_batting$Team.x,Temp_Cleaned_2022_batting$Rk.x,Temp_Cleaned_2022_batting$Opp.x)
+```
+
+```{r, include=FALSE}
+# Joins the season data frame and the batting/pitching data frame
+Finally_Cleaned_MLB_2019 <- merge(Cleaned_MLB_2019, Temp_Cleaned_2019_batting, by = "MLB.Key")
+Finally_Cleaned_MLB_2020 <- merge(Cleaned_MLB_2020, Temp_Cleaned_2020_batting, by = "MLB.Key")
+Finally_Cleaned_MLB_2022 <- merge(Cleaned_MLB_2022, Temp_Cleaned_2022_batting, by = "MLB.Key")
+```
+
+```{r, include=FALSE}
+#Replicated data (2019/2020)
+Finally_Cleaned_2019_home <- filter(Finally_Cleaned_MLB_2019, home.field == 1)
+Finally_Cleaned_2020_home <- filter(Finally_Cleaned_MLB_2020, home.field == 1)
+
+# Finally Combines the data frames into a single data frame
+Rep_data <- rbind(Finally_Cleaned_2019_home, Finally_Cleaned_2020_home)
+Rep_data$season <- ifelse(Rep_data$season == 2020, 1, 0 )
+```
+
+```{r}
+#Expanded data (2020/2022)
+Finally_Cleaned_2020_home <- filter(Finally_Cleaned_MLB_2020, home.field == 1)
+Finally_Cleaned_2022_home <- filter(Finally_Cleaned_MLB_2022, home.field == 1)
+
+# Finally Combines the data frames into a single data frame
+New_data <- rbind(Finally_Cleaned_2020_home, Finally_Cleaned_2022_home)
+New_data$season <- ifelse(New_data$season == 2020, 1, 0 )
+
+```
+
+```{r}
+# Simple regression
+simp.model <- glm(win.loss ~ season, data = Rep_data )
+#summary(simp.model)
+
+# Replication of Losak and Sabel model, logistic regression
+rep.model <- glm(win.loss ~ season + gameday + season*gameday + NoHomeDesign + avg.GS + avg.Opp.GS + avg.OPS + avg.Opp.OPS, data = Rep_data, family = "binomial")
+summary(rep.model)
+
+# Replication of Losak and Sabel model
+rep.model <- glm(win.loss ~ season + gameday + season*gameday + NoHomeDesign + avg.GS + avg.Opp.GS + avg.OPS + avg.Opp.OPS, data = Rep_data)
+summary(rep.model)
 ```
