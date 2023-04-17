@@ -421,11 +421,11 @@ simp.model <- glm(win.loss ~ season, data = New_data )
 #summary(simp.model)
 
 # Replication of Losak and Sabel model, logistic regression
-rep.model.log <- glm(win.loss ~ s.2020 + s.2021 + s.2022 + gameday + gameday*season + NoHomeDesign + avg.GS + avg.Opp.GS + avg.OPS + avg.Opp.OPS, data = New_data, family = "binomial")
-summary(rep.model.log)
+New.model.log <- glm(win.loss ~ s.2020 + s.2021 + s.2022 + gameday + gameday*s.2020 + gameday*s.2021 + gameday*s.2022 + NoHomeDesign + avg.GS + avg.Opp.GS + avg.OPS + avg.Opp.OPS, data = New_data, family = "binomial")
+summary(New.model.log)
 
 # Replication of Losak and Sabel model
-rep.model. <- glm(win.loss ~ s.2020 + s.2021 + s.2022 + gameday + gameday*season + NoHomeDesign + avg.GS + avg.Opp.GS + avg.OPS + avg.Opp.OPS, data = New_data)
-summary(rep.model)
+New.model <- glm(win.loss ~ s.2020 + s.2021 + s.2022 + gameday + gameday*s.2020 + gameday*s.2021 + gameday*s.2022 + NoHomeDesign + avg.GS + avg.Opp.GS + avg.OPS + avg.Opp.OPS, data = New_data)
+summary(New.model)
 ```
-\
+

@@ -242,81 +242,86 @@ simp.model <- glm(win.loss ~ season, data = New_data )
 #summary(simp.model)
 
 # Replication of Losak and Sabel model, logistic regression
-rep.model.log <- glm(win.loss ~ s.2020 + s.2021 + s.2022 + gameday + gameday*season + NoHomeDesign + avg.GS + avg.Opp.GS + avg.OPS + avg.Opp.OPS, data = New_data, family = "binomial")
-summary(rep.model.log)
+New.model.log <- glm(win.loss ~ s.2020 + s.2021 + s.2022 + gameday + gameday*s.2020 + gameday*s.2021 + gameday*s.2022 + NoHomeDesign + avg.GS + avg.Opp.GS + avg.OPS + avg.Opp.OPS, data = New_data, family = "binomial")
+summary(New.model.log)
 ```
 
     ## 
     ## Call:
     ## glm(formula = win.loss ~ s.2020 + s.2021 + s.2022 + gameday + 
-    ##     gameday * season + NoHomeDesign + avg.GS + avg.Opp.GS + avg.OPS + 
-    ##     avg.Opp.OPS, family = "binomial", data = New_data)
+    ##     gameday * s.2020 + gameday * s.2021 + gameday * s.2022 + 
+    ##     NoHomeDesign + avg.GS + avg.Opp.GS + avg.OPS + avg.Opp.OPS, 
+    ##     family = "binomial", data = New_data)
     ## 
     ## Deviance Residuals: 
     ##     Min       1Q   Median       3Q      Max  
-    ## -2.4641  -1.0325   0.5142   0.9832   2.6063  
+    ## -2.5451  -1.0320   0.5138   0.9841   2.6034  
     ## 
-    ## Coefficients: (1 not defined because of singularities)
+    ## Coefficients:
     ##                  Estimate Std. Error z value Pr(>|z|)    
-    ## (Intercept)     0.2906407  0.3858234   0.753   0.4513    
-    ## s.2020          0.0217297  0.1060135   0.205   0.8376    
-    ## s.2021         -0.0226629  0.0976009  -0.232   0.8164    
-    ## s.2022         -0.0465826  0.1285840  -0.362   0.7171    
-    ## gameday        -0.5278924  0.9013093  -0.586   0.5581    
-    ## season                 NA         NA      NA       NA    
-    ## NoHomeDesign   -0.9752280  0.4248769  -2.295   0.0217 *  
-    ## avg.GS         -0.4302330  0.0182459 -23.580  < 2e-16 ***
-    ## avg.Opp.GS      0.3889065  0.0185006  21.021  < 2e-16 ***
-    ## avg.OPS         2.9198194  0.3745284   7.796 6.39e-15 ***
-    ## avg.Opp.OPS    -2.8982122  0.3722878  -7.785 6.98e-15 ***
-    ## gameday:season  0.0002615  0.0004460   0.586   0.5577    
+    ## (Intercept)     2.748e-01  3.883e-01   0.708   0.4790    
+    ## s.2020         -2.147e-01  1.759e-01  -1.221   0.2222    
+    ## s.2021          4.324e-02  1.294e-01   0.334   0.7383    
+    ## s.2022         -7.758e-02  1.302e-01  -0.596   0.5512    
+    ## gameday         5.187e-05  9.739e-04   0.053   0.9575    
+    ## NoHomeDesign   -1.034e+00  4.311e-01  -2.398   0.0165 *  
+    ## avg.GS         -4.292e-01  1.826e-02 -23.510  < 2e-16 ***
+    ## avg.Opp.GS      3.893e-01  1.851e-02  21.031  < 2e-16 ***
+    ## avg.OPS         2.925e+00  3.748e-01   7.806 5.92e-15 ***
+    ## avg.Opp.OPS    -2.891e+00  3.727e-01  -7.758 8.64e-15 ***
+    ## s.2020:gameday  8.141e-03  4.447e-03   1.831   0.0671 .  
+    ## s.2021:gameday -2.777e-04  1.366e-03  -0.203   0.8389    
+    ## s.2022:gameday  1.180e-03  1.365e-03   0.864   0.3874    
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
     ## (Dispersion parameter for binomial family taken to be 1)
     ## 
     ##     Null deviance: 11223.1  on 8126  degrees of freedom
-    ## Residual deviance:  9650.6  on 8116  degrees of freedom
-    ## AIC: 9672.6
+    ## Residual deviance:  9646.4  on 8114  degrees of freedom
+    ## AIC: 9672.4
     ## 
     ## Number of Fisher Scoring iterations: 3
 
 ``` r
 # Replication of Losak and Sabel model
-rep.model. <- glm(win.loss ~ s.2020 + s.2021 + s.2022 + gameday + gameday*season + NoHomeDesign + avg.GS + avg.Opp.GS + avg.OPS + avg.Opp.OPS, data = New_data)
-summary(rep.model)
+New.model <- glm(win.loss ~ s.2020 + s.2021 + s.2022 + gameday + gameday*s.2020 + gameday*s.2021 + gameday*s.2022 + NoHomeDesign + avg.GS + avg.Opp.GS + avg.OPS + avg.Opp.OPS, data = New_data)
+summary(New.model)
 ```
 
     ## 
     ## Call:
-    ## glm(formula = win.loss ~ season + gameday + gameday * season + 
+    ## glm(formula = win.loss ~ s.2020 + s.2021 + s.2022 + gameday + 
+    ##     gameday * s.2020 + gameday * s.2021 + gameday * s.2022 + 
     ##     NoHomeDesign + avg.GS + avg.Opp.GS + avg.OPS + avg.Opp.OPS, 
-    ##     data = Rep_data)
+    ##     data = New_data)
     ## 
     ## Deviance Residuals: 
     ##     Min       1Q   Median       3Q      Max  
-    ## -1.1061  -0.4287   0.1170   0.4026   1.1817  
+    ## -1.1444  -0.4301   0.1096   0.4028   1.1790  
     ## 
     ## Coefficients:
     ##                  Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept)     6.991e-01  1.147e-01   6.098 1.20e-09 ***
-    ## season         -4.585e-02  3.660e-02  -1.253   0.2104    
-    ## gameday         2.652e-05  2.005e-04   0.132   0.8948    
-    ## NoHomeDesign   -2.133e-01  8.744e-02  -2.440   0.0147 *  
-    ## avg.GS         -8.423e-02  5.181e-03 -16.259  < 2e-16 ***
-    ## avg.Opp.GS      6.693e-02  5.336e-03  12.544  < 2e-16 ***
-    ## avg.OPS         6.073e-01  1.159e-01   5.240 1.71e-07 ***
-    ## avg.Opp.OPS    -7.368e-01  1.110e-01  -6.639 3.68e-11 ***
-    ## season:gameday  1.675e-03  9.148e-04   1.831   0.0671 .  
+    ## (Intercept)     5.579e-01  7.902e-02   7.060 1.80e-12 ***
+    ## s.2020         -4.586e-02  3.648e-02  -1.257   0.2088    
+    ## s.2021          7.731e-03  2.668e-02   0.290   0.7720    
+    ## s.2022         -1.745e-02  2.681e-02  -0.651   0.5153    
+    ## gameday        -2.059e-05  1.990e-04  -0.103   0.9176    
+    ## NoHomeDesign   -2.166e-01  8.722e-02  -2.484   0.0130 *  
+    ## avg.GS         -8.674e-02  3.415e-03 -25.398  < 2e-16 ***
+    ## avg.Opp.GS      7.796e-02  3.516e-03  22.173  < 2e-16 ***
+    ## avg.OPS         6.035e-01  7.607e-02   7.933 2.42e-15 ***
+    ## avg.Opp.OPS    -5.908e-01  7.577e-02  -7.797 7.10e-15 ***
+    ## s.2020:gameday  1.641e-03  9.124e-04   1.798   0.0722 .  
+    ## s.2021:gameday -3.914e-05  2.806e-04  -0.139   0.8891    
+    ## s.2022:gameday  2.709e-04  2.804e-04   0.966   0.3340    
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## (Dispersion parameter for gaussian family taken to be 0.2063239)
+    ## (Dispersion parameter for gaussian family taken to be 0.2054259)
     ## 
-    ##     Null deviance: 820.70  on 3300  degrees of freedom
-    ## Residual deviance: 679.22  on 3292  degrees of freedom
-    ## AIC: 4168.8
+    ##     Null deviance: 2020.9  on 8126  degrees of freedom
+    ## Residual deviance: 1666.8  on 8114  degrees of freedom
+    ## AIC: 10216
     ## 
     ## Number of Fisher Scoring iterations: 2
-
-  
