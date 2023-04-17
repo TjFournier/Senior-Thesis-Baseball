@@ -1,6 +1,5 @@
 ---
 title: "Data Cleaning"
-output: markdown
 date: "2023-02-27"
 ---
 
@@ -19,6 +18,9 @@ MLB_2019 <- read.csv('https://raw.githubusercontent.com/TjFournier/Senior-Thesis
 # 2020 Data
 MLB_2020 <- read.csv('https://raw.githubusercontent.com/TjFournier/Senior-Thesis-Baseball/main/Data/MLB_2020.csv')
 
+# 2021 Data
+MLB_2021 <- read.csv('https://raw.githubusercontent.com/TjFournier/Senior-Thesis-Baseball/main/Data/MLB_2021.csv')
+
 # 2022 Data
 MLB_2022 <- read.csv('https://raw.githubusercontent.com/TjFournier/Senior-Thesis-Baseball/main/Data/MLB_2022.csv')
 
@@ -27,6 +29,9 @@ batting_2019 <- read.csv('https://raw.githubusercontent.com/TjFournier/Senior-Th
 
 # 2020 batting 
 batting_2020 <- read.csv('https://raw.githubusercontent.com/TjFournier/Senior-Thesis-Baseball/main/Data/2020_batting.csv')
+
+# 2021 batting 
+batting_2021 <- read.csv('https://raw.githubusercontent.com/TjFournier/Senior-Thesis-Baseball/main/Data/2021_batting.csv')
 
 # 2022 batting 
 batting_2022 <- read.csv('https://raw.githubusercontent.com/TjFournier/Senior-Thesis-Baseball/main/Data/2022_batting.csv')
@@ -89,6 +94,35 @@ Cleaned_MLB_2020$MLB.Key <- str_c(Cleaned_MLB_2020$Tm,Cleaned_MLB_2020$Gm.,Clean
 ```
 
 ```{r, include=FALSE} 
+# 2021 Data
+# Data renaming
+Cleaned_MLB_2021 <- MLB_2021
+names(Cleaned_MLB_2021)[c(5, 7)] <- c('home.field', 'win.loss')
+
+# Converting wins and losses to 1 and 0
+Cleaned_MLB_2021$win.loss <- ifelse(Cleaned_MLB_2021$win.loss %in% c("W", "W-wo"), 1, 0)
+
+# Makes home field have a value of 1 and visiting a value of 0
+Cleaned_MLB_2021$home.field <- ifelse(Cleaned_MLB_2021$home.field == '@', 0, 1)
+
+# Finds the length of game streak, winning is pos and losing is neg
+Cleaned_MLB_2021$Streak <- ifelse( grepl('\\+', Cleaned_MLB_2021$Streak), nchar(Cleaned_MLB_2021$Streak),-1*nchar(Cleaned_MLB_2021$Streak))
+
+# Distinguishing data for when it is eventially joined
+Cleaned_MLB_2021$season <- 2021
+
+# Adds gameday value
+Cleaned_MLB_2021$gameday <- Cleaned_MLB_2021$Gm.
+
+# Adds No Home design
+Cleaned_MLB_2021$NoHomeDesign <- ifelse( grepl('was home team', Cleaned_MLB_2021$Orig..Scheduled), 1, 0)
+
+# Key creation
+Cleaned_MLB_2021$MLB.Key <- str_c(Cleaned_MLB_2021$Tm,Cleaned_MLB_2021$Gm.,Cleaned_MLB_2021$Opp)
+```
+
+
+```{r, include=FALSE} 
 # 2022 Data
 # Data renaming
 Cleaned_MLB_2022 <- MLB_2022
@@ -138,7 +172,7 @@ Cleaned_2019_batting$avg.GS <- roll_mean(Cleaned_2019_batting$GS, n = 5, align =
 #### Creating key to try and add Opp values
 
 # Key creation
-Cleaned_2019_batting$Key <- str_c(Cleaned_2019_batting$Team,Cleaned_2019_batting$Date,Cleaned_2020_batting$Opp)
+Cleaned_2019_batting$Key <- str_c(Cleaned_2019_batting$Team,Cleaned_2019_batting$Date,Cleaned_2019_batting$Opp)
 
 # Creates Opp
 Cleaned_2019_battingOpp <- subset(Cleaned_2019_batting, select = c("Rk", "Team","Date", "Opp", "avg.OPS", "avg.GS"))
@@ -191,6 +225,41 @@ Temp_Cleaned_2020_batting$MLB.Key <- str_c(Temp_Cleaned_2020_batting$Team.x,Temp
 
 ############
 
+# 2021 data
+Cleaned_2021_batting <- subset(batting_2021, select = c("Rk", "Team","Date", "X", "Opp", "Result","OPS"))
+Cleaned_2021_batting$X <- ifelse(Cleaned_2021_batting$X == '@', 0, 1)
+
+#Creates rolling average of OPS
+Cleaned_2021_batting <- Cleaned_2021_batting %>% group_by(Team)
+Cleaned_2021_batting$avg.OPS <- roll_mean(Cleaned_2021_batting$OPS, n = 15, align = "right", fill = NA)
+
+# Scores allowed (GS)
+Cleaned_2021_batting$GS <- substr(Cleaned_2021_batting$Result, start = 5, stop = 6)
+Cleaned_2021_batting$GS <- gsub("-","", Cleaned_2021_batting$GS)
+Cleaned_2021_batting$GS <- as.numeric(Cleaned_2021_batting$GS)
+
+#Creates rolling average of GS
+Cleaned_2021_batting$avg.GS <- roll_mean(Cleaned_2021_batting$GS, n = 5, align = "right", fill = NA)
+
+#### Creating key to try and add Opp values
+
+# Key creation
+Cleaned_2021_batting$Key <- str_c(Cleaned_2021_batting$Team,Cleaned_2021_batting$Date,Cleaned_2021_batting$Opp)
+
+# Creates Opp
+Cleaned_2021_battingOpp <- subset(Cleaned_2021_batting, select = c("Rk", "Team","Date", "Opp", "avg.OPS", "avg.GS"))
+Cleaned_2021_battingOpp <- Cleaned_2021_battingOpp
+names(Cleaned_2021_battingOpp)[c(5,6)] <- c('avg.Opp.OPS', 'avg.Opp.GS')
+
+Cleaned_2021_battingOpp$Key <- str_c(Cleaned_2021_batting$Opp,Cleaned_2021_batting$Date,Cleaned_2021_batting$Team)
+
+#Joins the two data frames together
+Temp_Cleaned_2021_batting <- merge(Cleaned_2021_batting, Cleaned_2021_battingOpp, by = "Key")
+
+# Join Key for MLB and batting/pitching data frames
+Temp_Cleaned_2021_batting$MLB.Key <- str_c(Temp_Cleaned_2021_batting$Team.x,Temp_Cleaned_2021_batting$Rk.x,Temp_Cleaned_2021_batting$Opp.x)
+############
+
 #2022 data 
 Cleaned_2022_batting <- subset(batting_2022, select = c("Rk", "Team","Date", "X", "Opp", "Result","OPS"))
 Cleaned_2022_batting$X <- ifelse(Cleaned_2022_batting$X == '@', 0, 1)
@@ -230,6 +299,7 @@ Temp_Cleaned_2022_batting$MLB.Key <- str_c(Temp_Cleaned_2022_batting$Team.x,Temp
 # Joins the season data frame and the batting/pitching data frame
 Finally_Cleaned_MLB_2019 <- merge(Cleaned_MLB_2019, Temp_Cleaned_2019_batting, by = "MLB.Key")
 Finally_Cleaned_MLB_2020 <- merge(Cleaned_MLB_2020, Temp_Cleaned_2020_batting, by = "MLB.Key")
+Finally_Cleaned_MLB_2021 <- merge(Cleaned_MLB_2021, Temp_Cleaned_2021_batting, by = "MLB.Key")
 Finally_Cleaned_MLB_2022 <- merge(Cleaned_MLB_2022, Temp_Cleaned_2022_batting, by = "MLB.Key")
 ```
 
@@ -241,18 +311,94 @@ Finally_Cleaned_2020_home <- filter(Finally_Cleaned_MLB_2020, home.field == 1)
 # Finally Combines the data frames into a single data frame
 Rep_data <- rbind(Finally_Cleaned_2019_home, Finally_Cleaned_2020_home)
 Rep_data$season <- ifelse(Rep_data$season == 2020, 1, 0 )
+
+Rep_data$Inn <- NULL
+Rep_data$Attendance <- NULL
+Rep_data <- na.omit(Rep_data)
 ```
 
-```{r}
+```{r, include=FALSE}
 #Expanded data (2020/2022)
+Finally_Cleaned_2019_home <- filter(Finally_Cleaned_MLB_2019, home.field == 1)
 Finally_Cleaned_2020_home <- filter(Finally_Cleaned_MLB_2020, home.field == 1)
+Finally_Cleaned_2021_home <- filter(Finally_Cleaned_MLB_2021, home.field == 1)
 Finally_Cleaned_2022_home <- filter(Finally_Cleaned_MLB_2022, home.field == 1)
 
 # Finally Combines the data frames into a single data frame
-New_data <- rbind(Finally_Cleaned_2020_home, Finally_Cleaned_2022_home)
-New_data$season <- ifelse(New_data$season == 2020, 1, 0 )
+New_data <- rbind(Finally_Cleaned_2019_home, Finally_Cleaned_2020_home, Finally_Cleaned_2021_home, Finally_Cleaned_2022_home)
 
+New_data$s.2019 <- ifelse(New_data$season == 2019, 1, 0 ) 
+New_data$s.2020 <- ifelse(New_data$season == 2020, 1, 0 )
+New_data$s.2021 <- ifelse(New_data$season == 2021, 1, 0 )
+New_data$s.2022 <- ifelse(New_data$season == 2022, 1, 0 )
+
+New_data$Inn <- NULL
+New_data$Orig..Scheduled <- NULL
+New_data$Attendance <- NULL
+New_data <- na.omit(New_data)
 ```
+
+```{r, include=FALSE}
+# Cleans for sum and SD
+Finally_Cleaned_2019_home$Inn <- NULL
+Finally_Cleaned_2019_home$Attendance <- NULL
+Finally_Cleaned_2019_home$Orig..Scheduled <- NULL
+Finally_Cleaned_2019_home <- na.omit(Finally_Cleaned_2019_home)
+
+Finally_Cleaned_2020_home$Inn <- NULL
+Finally_Cleaned_2020_home$Attendance <- NULL
+Finally_Cleaned_2020_home$Orig..Scheduled <- NULL
+Finally_Cleaned_2020_home <- na.omit(Finally_Cleaned_2020_home)
+
+Finally_Cleaned_2021_home$Inn <- NULL
+Finally_Cleaned_2021_home$Attendance <- NULL
+Finally_Cleaned_2021_home$Orig..Scheduled <- NULL
+Finally_Cleaned_2021_home <- na.omit(Finally_Cleaned_2021_home)
+
+Finally_Cleaned_2022_home$Inn <- NULL
+Finally_Cleaned_2022_home$Attendance <- NULL
+Finally_Cleaned_2022_home$Orig..Scheduled <- NULL
+Finally_Cleaned_2022_home <- na.omit(Finally_Cleaned_2022_home)
+```
+
+```{r}
+# Gives summary of data
+sum_full <- summary(New_data[c("win.loss", "avg.OPS", "avg.Opp.OPS", "avg.GS", "avg.Opp.GS")])
+sum_rep <- summary(Rep_data[c("win.loss", "avg.OPS", "avg.Opp.OPS", "avg.GS", "avg.Opp.GS")])
+sum_2019 <- summary(Finally_Cleaned_2019_home[c("win.loss", "avg.OPS", "avg.Opp.OPS", "avg.GS", "avg.Opp.GS")])
+sum_2020 <- summary(Finally_Cleaned_2020_home[c("win.loss", "avg.OPS", "avg.Opp.OPS", "avg.GS", "avg.Opp.GS", "NoHomeDesign")])
+sum_2021 <- summary(Finally_Cleaned_2021_home[c("win.loss", "avg.OPS", "avg.Opp.OPS", "avg.GS", "avg.Opp.GS")])
+sum_2022 <- summary(Finally_Cleaned_2022_home[c("win.loss", "avg.OPS", "avg.Opp.OPS", "avg.GS", "avg.Opp.GS")])
+
+# Finds SD of data
+SD_full <- apply(New_data[c("win.loss", "avg.OPS", "avg.Opp.OPS", "avg.GS", "avg.Opp.GS")], 2, sd)
+SD_rep <- apply(Rep_data[c("win.loss", "avg.OPS", "avg.Opp.OPS", "avg.GS", "avg.Opp.GS")], 2, sd)
+SD_2019 <- apply(Finally_Cleaned_2019_home[c("win.loss", "avg.OPS", "avg.Opp.OPS", "avg.GS", "avg.Opp.GS")], 2, sd)
+SD_2020 <- apply(Finally_Cleaned_2020_home[c("win.loss", "avg.OPS", "avg.Opp.OPS", "avg.GS", "avg.Opp.GS", "NoHomeDesign")], 2, sd)
+SD_2021 <- apply(Finally_Cleaned_2021_home[c("win.loss", "avg.OPS", "avg.Opp.OPS", "avg.GS", "avg.Opp.GS")], 2, sd)
+SD_2022 <- apply(Finally_Cleaned_2022_home[c("win.loss", "avg.OPS", "avg.Opp.OPS", "avg.GS", "avg.Opp.GS")], 2, sd)
+
+# Statistics Output
+sum_full
+SD_full
+###
+#sum_rep
+#SD_rep
+###
+sum_2019
+SD_2019
+###
+sum_2020
+SD_2020
+###
+sum_2021
+SD_2021
+###
+sum_2022
+SD_2022
+```
+
+
 
 ```{r}
 # Simple regression
@@ -260,10 +406,25 @@ simp.model <- glm(win.loss ~ season, data = Rep_data )
 #summary(simp.model)
 
 # Replication of Losak and Sabel model, logistic regression
-rep.model <- glm(win.loss ~ season + gameday + season*gameday + NoHomeDesign + avg.GS + avg.Opp.GS + avg.OPS + avg.Opp.OPS, data = Rep_data, family = "binomial")
-summary(rep.model)
+rep.model.log <- glm(win.loss ~ season + gameday + gameday*season + NoHomeDesign + avg.GS + avg.Opp.GS + avg.OPS + avg.Opp.OPS, data = Rep_data, family = "binomial")
+summary(rep.model.log)
 
 # Replication of Losak and Sabel model
-rep.model <- glm(win.loss ~ season + gameday + season*gameday + NoHomeDesign + avg.GS + avg.Opp.GS + avg.OPS + avg.Opp.OPS, data = Rep_data)
+rep.model <- glm(win.loss ~ season + gameday + gameday*season + NoHomeDesign + avg.GS + avg.Opp.GS + avg.OPS + avg.Opp.OPS, data = Rep_data)
 summary(rep.model)
 ```
+
+```{r}
+# Simple regression
+simp.model <- glm(win.loss ~ season, data = New_data )
+#summary(simp.model)
+
+# Replication of Losak and Sabel model, logistic regression
+rep.model.log <- glm(win.loss ~ s.2020 + s.2021 + s.2022 + gameday + gameday*season + NoHomeDesign + avg.GS + avg.Opp.GS + avg.OPS + avg.Opp.OPS, data = New_data, family = "binomial")
+summary(rep.model.log)
+
+# Replication of Losak and Sabel model
+rep.model. <- glm(win.loss ~ s.2020 + s.2021 + s.2022 + gameday + gameday*season + NoHomeDesign + avg.GS + avg.Opp.GS + avg.OPS + avg.Opp.OPS, data = New_data)
+summary(rep.model)
+```
+\
